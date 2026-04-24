@@ -1,9 +1,6 @@
 services:
   gateway:
     build: ./gateway
-    container_name: miniscrum_gateway
-    ports:
-      - "3000:3000"
     environment:
       PORT: 3000
       PHP_API_URL: http://php-api
@@ -11,10 +8,12 @@ services:
     depends_on:
       - php-api
       - python-ml
+    networks:
+      - dokploy-network
+      - miniscrum-internal
 
   php-api:
     build: ./php-api
-    container_name: miniscrum_php_api
     environment:
       DB_HOST: mysql
       DB_NAME: miniscrum
@@ -23,14 +22,16 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    networks:
+      - miniscrum-internal
 
   python-ml:
     build: ./python-ml
-    container_name: miniscrum_python_ml
+    networks:
+      - miniscrum-internal
 
   mysql:
     image: mysql:8.0
-    container_name: miniscrum_mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -43,6 +44,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - miniscrum-internal
 
 volumes:
   mysql_data:
+
+networks:
+  dokploy-network:
+    external: true
+  miniscrum-internal:
