@@ -1,16 +1,18 @@
 services:
   gateway:
     build: ./gateway
+    expose:
+      - "3000"
     environment:
-      PORT: 3010:3000
+      PORT: 3000
       PHP_API_URL: http://php-api
       PYTHON_ML_URL: http://python-ml:8000
     depends_on:
       - php-api
       - python-ml
     networks:
+      - default
       - dokploy-network
-      - miniscrum-internal
 
   php-api:
     build: ./php-api
@@ -22,13 +24,9 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    networks:
-      - miniscrum-internal
 
   python-ml:
     build: ./python-ml
-    networks:
-      - miniscrum-internal
 
   mysql:
     image: mysql:8.0
@@ -44,13 +42,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    networks:
-      - miniscrum-internal
 
 volumes:
   mysql_data:
 
 networks:
+  default:
   dokploy-network:
     external: true
-  miniscrum-internal:
