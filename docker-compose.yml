@@ -2,7 +2,7 @@ services:
   gateway:
     build: ./gateway
     environment:
-      PORT: 3000
+      PORT: 3010
       PHP_API_URL: http://php-api
       PYTHON_ML_URL: http://python-ml:8000
     depends_on:
